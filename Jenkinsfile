@@ -71,19 +71,30 @@ pipeline {
             }
          }
          stage('Deploy Application') {
-           steps {
+            steps {
+              withCredentials([string(
+              credentialsId: 'groq-api-key',
+              variable: 'LLM_API_KEY'
+               )]) {
             sh '''
-            docker rm -f infraops-container 2>/dev/null || true
+                set +x
+                set -eu
 
-            docker run -d \
-                --name infraops-container \
-                --restart unless-stopped \
-                -p 127.0.0.1:8001:8000 \
-                -v infraops-data:/data \
-                $IMAGE_NAME:$IMAGE_TAG
-        '''
-             }
-         }
+                docker rm -f infraops-container 2>/dev/null || true
+
+                docker run -d \
+                    --name infraops-container \
+                    --restart unless-stopped \
+                    -p 127.0.0.1:8001:8000 \
+                    -v infraops-data:/data \
+                    -e LLM_API_KEY \
+                    -e LLM_BASE_URL=https://api.groq.com/openai/v1 \
+                    -e LLM_MODEL=openai/gpt-oss-20b \
+                    $IMAGE_NAME:$IMAGE_TAG
+            '''
+               }
+            }
+   }
     }
 
 
