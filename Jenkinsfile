@@ -32,7 +32,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                sh 'docker build --pull --no-cache -t $IMAGE_NAME:$IMAGE_TAG .'
             }
         }
 
