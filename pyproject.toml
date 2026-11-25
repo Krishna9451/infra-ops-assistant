@@ -1,0 +1,26 @@
+[project]
+name = "infra-ops-assistant"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Krishna", email = "yadavshrikrishna65@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "boto3>=1.34,<2",
+    "fastapi>=0.115,<1",
+    "httpx>=0.27,<1",
+    "langgraph>=0.2,<2",
+    "prometheus-client>=0.20,<1",
+    "pydantic>=2.8,<3",
+    "pytest>=8,<10",
+    "uvicorn>=0.30,<1",
+]
+
+[project.scripts]
+infra-ops-assistant = "infra_ops_assistant:main"
+
+[build-system]
+requires = ["uv_build>=0.13.8,<0.14.0"]
+build-backend = "uv_build"
