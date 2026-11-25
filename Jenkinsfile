@@ -47,7 +47,46 @@ pipeline {
                 '''
             }
         }
+        stage('Push to Docker Hub') {
+            steps {
+               withCredentials([usernamePassword(
+               credentialsId: 'dockerhub-credentials',
+               usernameVariable: 'DOCKER_USER',
+               passwordVariable: 'DOCKER_TOKEN'
+               )]) {
+            sh '''
+                set +x
+
+                echo "$DOCKER_TOKEN" | docker login \
+                    -u "$DOCKER_USER" --password-stdin
+
+                trap 'docker logout' EXIT
+
+                docker tag $IMAGE_NAME:$IMAGE_TAG \
+                    $DOCKER_USER/$IMAGE_NAME:$IMAGE_TAG
+
+                docker push $DOCKER_USER/$IMAGE_NAME:$IMAGE_TAG
+            '''
+              }
+            }
+         }
+         stage('Deploy Application') {
+           steps {
+            sh '''
+            docker rm -f infraops-container 2>/dev/null || true
+
+            docker run -d \
+                --name infraops-container \
+                --restart unless-stopped \
+                -p 127.0.0.1:8001:8000 \
+                -v infraops-data:/data \
+                $IMAGE_NAME:$IMAGE_TAG
+        '''
+             }
+         }
     }
+
+
 
     post {
         success {
