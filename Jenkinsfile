@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'infra-ops-assistant'
         IMAGE_TAG = "${BUILD_NUMBER}"
+        PATH = "/usr/local/bin:/opt/homebrew/bin:${env.PATH}"
     }
 
     stages {
